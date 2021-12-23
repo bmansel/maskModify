@@ -35,7 +35,6 @@ def makeMaskFile(experimentDirectory, maskName, saveName, overwrite):
         try:
             f=open(experimentDirectory + "/" + saveName, 'a')
             np.savetxt(f, np.transpose([maskPixels[0], maskPixels[1], maskValue]),fmt='%11u%11u%11.6f')
-            print("went to True append")
         except:
             print('Could not open' + experimentDirectory + "/" + saveName)
 
