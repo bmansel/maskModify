@@ -25,16 +25,14 @@ def makeMaskFile(experimentDirectory, maskName, saveName, overwrite):
     mask2d = np.load(experimentDirectory+ "/" + maskName)
     maskPixels = np.squeeze(np.where(1 == mask2d))
     maskValue = [1.000000]*len(maskPixels[0])
-    print(maskPixels[0],maskPixels[1])
-    print(len(maskPixels[0]))
 
     if overwrite is True:
         f=open(experimentDirectory + "/" + saveName, 'w')
-        np.savetxt(f, np.transpose([maskPixels[0], maskPixels[1], maskValue]),fmt='%11u%11u%11.6f')
+        np.savetxt(f, np.transpose([maskPixels[1], maskPixels[0], maskValue]),fmt='%11u%11u%11.6f')
     elif overwrite is False:
         try:
             f=open(experimentDirectory + "/" + saveName, 'a')
-            np.savetxt(f, np.transpose([maskPixels[0], maskPixels[1], maskValue]),fmt='%11u%11u%11.6f')
+            np.savetxt(f, np.transpose([maskPixels[1], maskPixels[0], maskValue]),fmt='%11u%11u%11.6f')
         except:
             print('Could not open' + experimentDirectory + "/" + saveName)
 
