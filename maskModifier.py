@@ -21,29 +21,25 @@ import numpy as np
 import argparse
 
 def saveMask(maskPixelsX, maskPixelsY, maskValue, experimentDirectory, saveName, overwrite):
-    if overwrite is True:
-        f=open(experimentDirectory + "/" + saveName, 'w')
-        np.savetxt(f, np.transpose([maskPixelsX, maskPixelsY, maskValue]),fmt='%11u%11u%11.6f')
-        f.close()
-        return
-    elif overwrite is False:
-        f=open(experimentDirectory + "/" + saveName, 'a')
-        np.savetxt(f, np.transpose([maskPixelsX, maskPixelsY, maskValue]),fmt='%11u%11u%11.6f')
-        f.close()
-        return
+    if overwrite: 
+        mode = 'w'
+    elif not overwrite: 
+        mode = 'a'
 
+    with open(experimentDirectory + "/" + saveName, mode) as f:
+        np.savetxt(f, np.transpose([maskPixelsX, maskPixelsY, maskValue]),fmt='%11u%11u%11.6f')
+    return
 
 def makeMaskFile(experimentDirectory, maskName, saveName, overwrite):
     mask2d = np.load(experimentDirectory+ "/" + maskName)
     mask_sum = np.sum(mask2d)
     maskPixels = np.squeeze(np.where(1 == mask2d))
     if mask_sum <= 1:
-        print()
         print("Only 1 or less pixels found. no mask created, please assign more than one pixel.")
         return
 
-    maskValue = np.array([1.000000]*len(maskPixels[0]))
-    saveMask(maskPixels[1], maskPixels[0], maskValue, experimentDirectory, saveName, overwrite)
+    saveMask(maskPixels[1], maskPixels[0], np.array([1.000000]*len(maskPixels[0])), experimentDirectory, saveName, overwrite)
+    return
     
 
 def main():
@@ -53,17 +49,17 @@ def main():
     parser.add_argument('--save_name', action='store', help='name of column .dat file to save [default=reject.dat].',type=str, default='REJECT.dat')
     parser.add_argument('--overwrite', action='store_true', help='If --overwrite reject.dat will be overwritten. otherwise data is appended to old file')
     args = parser.parse_args()
+    
     if args.directory is None:
         experimentDirectory = os.getcwd()
     else:    
         experimentDirectory = args.directory
+    
     maskName = args.pyFAI_mask
     saveName = args.save_name
     overwrite = args.overwrite
 
     makeMaskFile(experimentDirectory, maskName, saveName, overwrite)
-
-    
 
 if __name__ == "__main__":
     main()
